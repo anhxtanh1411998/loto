@@ -1,6 +1,7 @@
 package com.example.tuananhngu
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +15,9 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
+import java.io.IOException
+import java.util.*
+import javax.xml.datatype.DatatypeConstants.MONTHS
 import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
@@ -23,13 +27,39 @@ class MainActivity : AppCompatActivity() {
     private val listLotoWeb = mutableListOf<String>()
     private val listLotoPlayer = mutableListOf<String>()
     private val listLotoPlayerEat = mutableListOf<String>()
-
+    private var date: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setObserver()
+        showDate()
         setOnClick()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun showDate() {
+        val c = Calendar.getInstance()
+        var year = c.get(Calendar.YEAR)
+        var month = c.get(Calendar.MONTH)
+        var day = c.get(Calendar.DAY_OF_MONTH)
+        val formattedMonth = String.format("%02d", month + 1)
+        val formattedDay = String.format("%02d", day)
+        binding.lblDate.text = "Ngày: $formattedDay-${formattedMonth}-$year"
+        date = "${formattedDay}_${formattedMonth}_$year"
+        loadDataOnWeb(date)
+        binding.lblDate.setOnClickListener {
+            val dpd = DatePickerDialog(this, { _, year1, monthOfYear, dayOfMonth ->
+                val formattedMonth1 = String.format("%02d", monthOfYear + 1)
+                val formattedDay1 = String.format("%02d", dayOfMonth)
+                year = year1
+                month = monthOfYear
+                day = dayOfMonth
+                binding.lblDate.text = "$formattedDay1-${formattedMonth1}-$year1"
+                date = "${formattedDay1}_${formattedMonth1}_$year1"
+                loadDataOnWeb(date)
+            }, year, month, day)
+            dpd.show()
+        }
     }
 
     @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
@@ -47,6 +77,12 @@ class MainActivity : AppCompatActivity() {
                 binding.tvDiemKHAn.text =
                     "- Xác suất: " + listLotoKhachEat.size + "\n- Gồm những con: " + listLotoKhachEat.joinToString()
                 calculatingLoLai(listLotoKhachEat)
+            }
+        }
+
+        binding.btLoadKetQuaWeb.setOnClickListener {
+            date?.let {
+                loadDataOnWeb(date)
             }
         }
 
@@ -88,9 +124,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setObserver() {
+    private fun loadDataOnWeb(date: String?) {
+        val url = "https://xosodaiphat.com/do-so-trung-00-mb-$date.html"
         lifecycleScope.launch {
-            val result = loadDataFromUrl("https://xosodaiphat.com")
+            val result =
+                loadDataFromUrl(url)
             binding.lotoWeb.text = "- Những con về: $result"
         }
     }
@@ -107,12 +145,14 @@ class MainActivity : AppCompatActivity() {
                 val doc = Jsoup.parse(html)
                 val lotoTable = doc.select("table.table-loto")
                 val lotoRows = lotoTable.select("tr")
-                val lotoTds = doc.select("td[id^=loto_mb_]")
-                for (td in lotoTds) {
-                    val lotoNumber = td.text()
-                    Log.e("here", lotoNumber)
-                    val output = convertStringToList(lotoNumber)
-                    listLotoWeb.addAll(output)
+                lotoRows.forEach {
+                    val elements = it.getElementsByTag("td")
+                    if (elements.size > 1) {
+                        val lotoNumber = elements[1].text()
+                        Log.e("here", lotoNumber)
+                        val output = convertStringToList(lotoNumber)
+                        listLotoWeb.addAll(output)
+                    }
                 }
                 Log.e("here", "lấy về thành công!")
                 listLotoWeb.joinToString()

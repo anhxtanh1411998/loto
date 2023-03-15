@@ -51,6 +51,18 @@
             app:layout_constraintTop_toBottomOf="@+id/edtDiemTong" />
 
         <TextView
+            android:id="@+id/lblDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="32dp"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edtMyDiemPlay" />
+
+        <TextView
             android:id="@+id/lotoWeb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,7 +72,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edtMyDiemPlay" />
+            app:layout_constraintTop_toBottomOf="@+id/lblDate" />
 
         <Button
             android:id="@+id/btClear"
@@ -75,6 +87,18 @@
             app:layout_constraintTop_toBottomOf="@+id/lotoWeb" />
 
         <Button
+            android:id="@+id/btLoadKetQuaWeb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="32dp"
+            android:text="Cập nhật lại kết quả trên web"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btClear" />
+
+        <Button
             android:id="@+id/btResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,7 +108,7 @@
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btClear" />
+            app:layout_constraintTop_toBottomOf="@+id/btLoadKetQuaWeb" />
 
         <TextView
             android:id="@+id/tvDiemKHAn"
